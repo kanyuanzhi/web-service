@@ -16,5 +16,4 @@ func (t *Terminal) Create(c *gin.Context) {
 	// 接收从前端页面发送过来的终端基本信息
 	msg := c.PostForm("message")
 	log.Println(msg)
-
 }

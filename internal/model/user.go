@@ -33,3 +33,20 @@ func (u *User) Get() *User {
 	}
 	return &user
 }
+
+func (u *User) List() []*User {
+	var users []*User
+	err := global.DB.Find(&users).Error
+	if err != nil {
+		global.Log.Error(err)
+	}
+	return users
+}
+
+func (u *User) Update() *User {
+	err := global.DB.Model(u).Updates(u).Error
+	if err != nil {
+		global.Log.Error(err)
+	}
+	return u
+}

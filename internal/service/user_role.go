@@ -4,13 +4,13 @@ import (
 	"github.com/kanyuanzhi/web-service/internal/model"
 )
 
-type CreateUserRoleRequest struct {
-	UserID   uint   `json:"user_id" form:"user_id"`
-	RoleName string `json:"role_name" form:"role_name"`
+type CreateUserRolesRequest struct {
+	UserID    uint     `json:"user_id" form:"user_id"`
+	RoleNames []string `json:"roles" form:"roles"`
 }
 
-func (s *Service) CreateUserRole(param *CreateUserRoleRequest) uint {
-	return s.dao.CreateUserRole(param.UserID, param.RoleName)
+func (s *Service) CreateUserRoles(param *CreateUserRolesRequest) []*model.UserRole {
+	return s.dao.CreateUserRoles(param.UserID, param.RoleNames)
 }
 
 type GetUserRoleRequest struct {
@@ -19,4 +19,12 @@ type GetUserRoleRequest struct {
 
 func (s *Service) GetUserRoles(param *GetUserRoleRequest) []*model.UserRole {
 	return s.dao.GetUserRoles(param.UserID)
+}
+
+type DeleteUserRolesRequest struct {
+	UserID uint `json:"user_id" form:"user_id"`
+}
+
+func (s *Service) DeleteUserRoles(param *DeleteUserRolesRequest) {
+	s.dao.DeleteUserRoles(param.UserID)
 }

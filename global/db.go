@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"time"
 )
@@ -17,7 +18,9 @@ func initDB() *gorm.DB {
 		Object.MysqlHost,
 		Object.MysqlPort,
 		Object.MysqlDbname)
-	globalDB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	globalDB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		log.Println(err)
 		return nil

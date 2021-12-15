@@ -18,3 +18,19 @@ func (dao *Dao) GetUser(token string) *model.User {
 	}
 	return user.Get()
 }
+
+func (dao *Dao) ListUsers() []*model.User {
+	user := &model.User{}
+	return user.List()
+}
+
+func (dao *Dao) UpdateUser(id uint, name string, contact string, introduction string, avatar string) *model.User {
+	user := &model.User{
+		DefaultFields: &model.DefaultFields{ID: id},
+		Name:          name,
+		Contact:       contact,
+		Introduction:  introduction,
+		Avatar:        avatar,
+	}
+	return user.Update()
+}

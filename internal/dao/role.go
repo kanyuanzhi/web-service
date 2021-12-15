@@ -4,8 +4,7 @@ import (
 	"github.com/kanyuanzhi/web-service/internal/model"
 )
 
-func (dao *Dao) GetRole(id uint) *model.Role {
-	user := &model.Role{}
-	user.ID = id
-	return user.Get()
+func (dao *Dao) ListRoles() []*model.Role {
+	role := &model.Role{}
+	return role.List()
 }

@@ -14,12 +14,12 @@ func (ur *UserRole) TableName() string {
 	return "users_roles"
 }
 
-func (ur *UserRole) Create() uint {
-	err := global.DB.Create(ur).Error
+func (ur *UserRole) CreateMany(userRoles []*UserRole) []*UserRole {
+	err := global.DB.Create(&userRoles).Error
 	if err != nil {
 		global.Log.Error(err)
 	}
-	return ur.ID
+	return userRoles
 }
 
 func (ur *UserRole) Get() []*UserRole {
@@ -29,4 +29,11 @@ func (ur *UserRole) Get() []*UserRole {
 		global.Log.Error(err)
 	}
 	return userRoles
+}
+
+func (ur *UserRole) DeleteByUserID() {
+	err := global.DB.Where(ur).Delete(ur).Error
+	if err != nil {
+		global.Log.Error(err)
+	}
 }

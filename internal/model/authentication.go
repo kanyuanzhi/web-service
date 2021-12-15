@@ -21,12 +21,11 @@ func (auth *Authentication) Find() *Authentication {
 	return &authentication
 }
 
-func (auth *Authentication) Create() uint {
+func (auth *Authentication) Create() {
 	err := global.DB.Create(auth).Error
 	if err != nil {
 		global.Log.Error(err)
 	}
-	return auth.ID
 }
 
 func (auth *Authentication) Count() int64 {
@@ -37,4 +36,9 @@ func (auth *Authentication) Count() int64 {
 		return -1
 	}
 	return count
+}
+
+func (auth *Authentication) Update() error {
+	return global.DB.Model(auth).Where("token = ?", auth.Token).
+		Update("password", auth.Password).Error
 }

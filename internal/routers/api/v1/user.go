@@ -9,7 +9,6 @@ import (
 	"github.com/kanyuanzhi/web-service/pkg/app"
 	"github.com/kanyuanzhi/web-service/pkg/errcode"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -35,6 +34,7 @@ func (u *User) Get(c *gin.Context) {
 
 	user := svc.GetUser(&userParam)
 
+	// 关联roles
 	userRoleParam := service.GetUserRoleRequest{UserID: user.ID}
 	userRoles := svc.GetUserRoles(&userRoleParam)
 	var roles []string
@@ -45,33 +45,80 @@ func (u *User) Get(c *gin.Context) {
 			roles = append(roles, role.RoleName)
 		}
 	}
+	if roles == nil {
+		user.Roles = []string{}
+	} else {
+		user.Roles = roles
+	}
 
-	user.Roles = roles
-	user.Departments = []uint{}
+	// 关联departments
+	userDepartmentParam := service.GetUserDepartmentsRequest{UserID: user.ID}
+	userDepartments := svc.GetUserDepartments(&userDepartmentParam)
+	var departments []uint
+	for _, userDepartment := range userDepartments {
+		departments = append(departments, userDepartment.DepartmentID)
+	}
+	if departments == nil {
+		user.Departments = []uint{}
+	} else {
+		user.Departments = departments
+	}
 
 	resData := model.NewSuccessResponse(user)
 	res.ToResponse(resData)
 }
 
 func (u *User) List(c *gin.Context) {
-	log.Println(121312421)
-	c.JSON(200, gin.H{
-		"message": "pong",
-	})
+	res := app.NewResponse(c)
+	svc := service.New(c.Request.Context())
+
+	users := svc.ListUsers()
+
+	for _, user := range users {
+		// 根据userID查询对应权限
+		userRoleParam := service.GetUserRoleRequest{UserID: user.ID}
+		userRoles := svc.GetUserRoles(&userRoleParam)
+		var roles []string
+		for _, userRole := range userRoles {
+			roles = append(roles, userRole.RoleName)
+		}
+		if roles == nil {
+			// 令json格式在用户没有任何权限时，departments字段为[]，否则为null
+			user.Roles = []string{}
+		} else {
+			user.Roles = roles
+		}
+		// 根据userID查询对应部门
+		userDepartmentParam := service.GetUserDepartmentsRequest{UserID: user.ID}
+		userDepartments := svc.GetUserDepartments(&userDepartmentParam)
+		var departments []uint
+		for _, userDepartment := range userDepartments {
+			departments = append(departments, userDepartment.DepartmentID)
+		}
+		if departments == nil {
+			// 令json格式在用户没有加入任何部门时，departments字段为[]，否则为null
+			user.Departments = []uint{}
+		} else {
+			user.Departments = departments
+		}
+	}
+
+	resData := model.NewSuccessResponse(users)
+	res.ToResponse(resData)
 }
 
 func (u *User) Register(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
 
-	var createAuthParam service.CreateAuthenticationRequest
-	err := c.BindJSON(&createAuthParam)
+	var registerParam service.RegisterRequest
+	err := c.BindJSON(&registerParam)
 	if err != nil {
 		global.Log.Error(err)
 		return
 	}
 
-	countAuthParam := service.CountAuthenticationRequest{Username: createAuthParam.Username}
+	countAuthParam := service.CountAuthenticationRequest{Username: registerParam.Username}
 
 	count := svc.CountAuthentication(&countAuthParam) // 判断用户名是否已经注册
 	if count != 0 {
@@ -79,19 +126,87 @@ func (u *User) Register(c *gin.Context) {
 		return
 	}
 
-	token := svc.CreateAuthentication(&createAuthParam)
-	createUserParam := service.CreateUserRequest{Token: token, Username: createAuthParam.Username}
-	userID := svc.CreateUser(&createUserParam)
-
-	createUserRoleParam := service.CreateUserRoleRequest{UserID: userID, RoleName: "guest"}
-	svc.CreateUserRole(&createUserRoleParam)
+	token := svc.Register(&registerParam)
 
 	resData := model.NewSuccessResponse(gin.H{"token": token})
 	res.ToResponse(resData)
 }
 
-func (u *User) Update(c *gin.Context) {
+func (u *User) UpdatePassword(c *gin.Context) {
+	res := app.NewResponse(c)
+	svc := service.New(c.Request.Context())
 
+	var updatePasswordParam service.UpdatePasswordRequest
+	err := c.BindJSON(&updatePasswordParam)
+	if err != nil {
+		global.Log.Error(err)
+		return
+	}
+
+	err = svc.UpdateAuthentication(&updatePasswordParam)
+	if err != nil {
+		global.Log.Error(err)
+		res.ToResponse(errcode.AuthenticationFailError)
+		return
+	}
+
+	resData := model.NewSuccessResponse(nil)
+	res.ToResponse(resData)
+}
+
+func (u *User) UpdateAccount(c *gin.Context) {
+	res := app.NewResponse(c)
+	svc := service.New(c.Request.Context())
+
+	// 更新基本信息
+	var updateUserAccountParam service.UpdateUserAccountRequest
+	err := c.BindJSON(&updateUserAccountParam)
+	if err != nil {
+		global.Log.Error(err)
+		return
+	}
+	user := svc.UpdateUser(&updateUserAccountParam)
+
+	// 更新部门
+	updateUserDepartmentRequest := service.UpdateUserDepartmentsRequest{UserID: updateUserAccountParam.ID, DepartmentIDs: updateUserAccountParam.Departments}
+	userDepartments := svc.UpdateUserDepartments(&updateUserDepartmentRequest)
+	if userDepartments == nil {
+		user.Departments = []uint{}
+	} else {
+		var departments []uint
+		for _, userDepartment := range userDepartments {
+			departments = append(departments, userDepartment.DepartmentID)
+		}
+		user.Departments = departments
+	}
+
+	resData := model.NewSuccessResponse(user)
+	res.ToResponse(resData)
+}
+
+func (u *User) UpdateRoles(c *gin.Context) {
+	res := app.NewResponse(c)
+	svc := service.New(c.Request.Context())
+
+	var updateUserRolesRequest service.UpdateUserRolesRequest
+	err := c.BindJSON(&updateUserRolesRequest)
+	if err != nil {
+		global.Log.Error(err)
+		return
+	}
+
+	if len(updateUserRolesRequest.RoleNames) == 0 {
+		res.ToResponse(errcode.EmptyRolesError)
+		return
+	}
+
+	userRoles := svc.UpdateUserRoles(&updateUserRolesRequest)
+	var roles []string
+	for _, userRole := range userRoles {
+		roles = append(roles, userRole.RoleName)
+	}
+	resData := model.NewSuccessResponse(gin.H{"roles": roles})
+	res.ToResponse(resData)
 }
 
 func (u *User) Delete(c *gin.Context) {
@@ -109,7 +224,7 @@ func (u *User) Login(c *gin.Context) {
 		return
 	}
 
-	auth := svc.FindAuthentication(&loginParam)
+	auth := svc.Login(&loginParam)
 	if auth == nil {
 		res.ToResponse(errcode.AuthenticationFailError)
 		return
