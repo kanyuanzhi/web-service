@@ -210,7 +210,24 @@ func (u *User) UpdateRoles(c *gin.Context) {
 }
 
 func (u *User) Delete(c *gin.Context) {
+	res := app.NewResponse(c)
+	svc := service.New(c.Request.Context())
 
+	var deleteUserParam service.DeleteUserRequest
+	err := c.BindQuery(&deleteUserParam)
+	if err != nil {
+		global.Log.Error(err)
+		return
+	}
+
+	err = svc.DeleteUser(&deleteUserParam)
+	if err != nil {
+		global.Log.Error(err)
+		res.ToResponse(errcode.ServerError)
+	}
+
+	resData := model.NewSuccessResponse(nil)
+	res.ToResponse(resData)
 }
 
 func (u *User) Login(c *gin.Context) {

@@ -41,3 +41,10 @@ func (dao *Dao) UpdateAuthentication(token string, password string) error{
 	}
 	return auth.Update()
 }
+
+func (dao *Dao) DeleteAuthentication(token string) error{
+	auth := &model.Authentication{
+		Token:    token,
+	}
+	return auth.Delete()
+}

@@ -73,3 +73,11 @@ type CountAuthenticationRequest struct {
 func (s *Service) CountAuthentication(param *CountAuthenticationRequest) int64 {
 	return s.dao.CountAuthentication(param.Username)
 }
+
+type DeleteAuthenticationRequest struct {
+	Token string `json:"token" form:"token"`
+}
+
+func (s *Service) DeleteAuthentication(param *DeleteAuthenticationRequest) error {
+	return s.dao.DeleteAuthentication(param.Token)
+}

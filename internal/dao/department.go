@@ -16,3 +16,19 @@ func (dao *Dao) ListDepartments() []*model.Department {
 	department := &model.Department{}
 	return department.List()
 }
+
+func (dao *Dao) UpdateDepartment(id uint, name string, introduction string) (*model.Department,error) {
+	department := &model.Department{
+		DefaultFields: &model.DefaultFields{ID: id},
+		Name: name,
+		Introduction: introduction,
+	}
+	return department.Update()
+}
+
+func (dao *Dao) DeleteDepartment(id uint) (error) {
+	department := &model.Department{
+		DefaultFields: &model.DefaultFields{ID: id},
+	}
+	return department.Delete()
+}

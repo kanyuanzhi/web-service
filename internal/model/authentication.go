@@ -42,3 +42,8 @@ func (auth *Authentication) Update() error {
 	return global.DB.Model(auth).Where("token = ?", auth.Token).
 		Update("password", auth.Password).Error
 }
+
+func (auth *Authentication) Delete() error {
+	return global.DB.Where("token = ?", auth.Token).
+		Delete(auth).Error
+}

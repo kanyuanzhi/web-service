@@ -24,3 +24,19 @@ func (d *Department) List() []*Department {
 	}
 	return departments
 }
+
+func (d *Department) Update() (*Department, error) {
+	err := global.DB.Model(d).Updates(d).Error
+	if err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
+func (d *Department) Delete() ( error) {
+	err := global.DB.Delete(d).Error
+	if err != nil {
+		return  err
+	}
+	return nil
+}

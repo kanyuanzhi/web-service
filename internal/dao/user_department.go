@@ -22,5 +22,10 @@ func (dao *Dao) GetUserDepartments(userID uint) []*model.UserDepartment {
 
 func (dao *Dao) DeleteUserDepartments(userID uint) {
 	userDepartment := &model.UserDepartment{UserID: userID}
-	userDepartment.DeleteByUserID()
+	userDepartment.Delete()
+}
+
+func (dao *Dao) DeleteDepartmentUsers(departmentID uint) {
+	userDepartment := &model.UserDepartment{DepartmentID: departmentID}
+	userDepartment.Delete()
 }

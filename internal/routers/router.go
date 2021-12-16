@@ -25,24 +25,27 @@ func NewRouter() *gin.Engine {
 	apiv1 := r.Group("/api/v1")
 	{
 		// finished
+		apiv1.POST("/user/login", user.Login)
+		apiv1.POST("/user/logout", user.Logout)
 		apiv1.POST("/user/register", user.Register)
 		apiv1.GET("/user", user.Get)
 		apiv1.GET("/users", user.List)
-		apiv1.POST("/user/logout", user.Logout)
-		apiv1.POST("/user/login", user.Login)
 		apiv1.PUT("/user/account", user.UpdateAccount)
 		apiv1.PUT("/user/roles", user.UpdateRoles)
 		apiv1.PUT("/user/password", user.UpdatePassword)
+		apiv1.DELETE("/user", user.Delete)
 
-		apiv1.GET("/departments", department.List)
 		apiv1.POST("/department", department.Create)
+		apiv1.GET("/departments", department.List)
+		apiv1.PUT("/department", department.Update)
+		apiv1.DELETE("/department", department.Delete)
 
 		apiv1.GET("/roles", role.List)
+		apiv1.PUT("/role", role.Update)
 
 		// unfinished
 		apiv1.POST("/user/avatar", user.UploadAvatar)
 		apiv1.GET("/user/avatar/:image", user.DownloadAvatar)
-		apiv1.DELETE("/user/:token", user.Delete)
 		//apiv1.PUT("/user/:token", user.Update)
 
 		apiv1.POST("/terminal", terminal.Create)

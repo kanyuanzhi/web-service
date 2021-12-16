@@ -18,3 +18,11 @@ func (r *Role) List() []*Role {
 	}
 	return roles
 }
+
+func (r *Role) Update() (*Role, error) {
+	err := global.DB.Model(r).Updates(r).Error
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}

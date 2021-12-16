@@ -34,3 +34,10 @@ func (dao *Dao) UpdateUser(id uint, name string, contact string, introduction st
 	}
 	return user.Update()
 }
+
+func (dao *Dao) DeleteUser(token string) error {
+	user := &model.User{
+		Token: token,
+	}
+	return user.Delete()
+}

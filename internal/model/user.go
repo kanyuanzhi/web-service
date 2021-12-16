@@ -50,3 +50,11 @@ func (u *User) Update() *User {
 	}
 	return u
 }
+
+func (u *User) Delete() error {
+	err := global.DB.Where("token = ?", u.Token).Delete(u).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

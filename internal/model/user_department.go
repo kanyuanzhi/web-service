@@ -31,9 +31,10 @@ func (ud *UserDepartment) Get() []*UserDepartment {
 	return UserDepartments
 }
 
-func (ud *UserDepartment) DeleteByUserID() {
+func (ud *UserDepartment) Delete() {
 	err := global.DB.Where(ud).Delete(ud).Error
 	if err != nil {
 		global.Log.Error(err)
 	}
 }
+

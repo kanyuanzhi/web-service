@@ -78,3 +78,26 @@ func (s *Service) UpdateUserRoles(param *UpdateUserRolesRequest) []*model.UserRo
 	createUserRolesRequest := CreateUserRolesRequest{UserID: param.UserID, RoleNames: param.RoleNames}
 	return s.CreateUserRoles(&createUserRolesRequest)
 }
+
+type DeleteUserRequest struct {
+	Token string `json:"token" form:"token"`
+}
+
+func (s *Service) DeleteUser(param *DeleteUserRequest) error {
+	user := s.dao.GetUser(param.Token)
+
+	err := s.dao.DeleteUser(param.Token)
+	if err != nil {
+		return err
+	}
+	deleteAuthenticationParam := DeleteAuthenticationRequest{Token: param.Token}
+	err = s.DeleteAuthentication(&deleteAuthenticationParam)
+	if err != nil {
+		return err
+	}
+	deleteUserRolesRequest := DeleteUserRolesRequest{UserID: user.ID}
+	s.DeleteUserRoles(&deleteUserRolesRequest)
+	deleteUserDepartmentsParam := DeleteUserDepartmentsRequest{UserID: user.ID}
+	s.DeleteUserDepartments(&deleteUserDepartmentsParam)
+	return nil
+}
