@@ -1,4 +1,4 @@
-package model
+package terminal_model
 
 type TerminalNetBasic struct {
 	Name string `json:"name"`

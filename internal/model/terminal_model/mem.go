@@ -1,4 +1,4 @@
-package model
+package terminal_model
 
 type TerminalMemBasic struct {
 	Total uint64 `json:"total"`

@@ -1,4 +1,4 @@
-package model
+package terminal_model
 
 type TerminalDiskBasic struct {
 	Path   string `json:"path"`

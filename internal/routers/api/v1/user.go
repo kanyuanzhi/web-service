@@ -241,15 +241,15 @@ func (u *User) Login(c *gin.Context) {
 		return
 	}
 
-	auth := svc.Login(&loginParam)
-	if auth == nil {
+	auth, err := svc.Login(&loginParam)
+	if err == nil {
+		global.Log.Error(err)
 		res.ToResponse(errcode.AuthenticationFailError)
-		return
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(loginParam.Password))
 	if err != nil {
+		global.Log.Error(err)
 		res.ToResponse(errcode.AuthenticationFailError)
-		return
 	}
 	resData := model.NewSuccessResponse(gin.H{"token": auth.Token})
 	res.ToResponse(resData)

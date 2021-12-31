@@ -1,4 +1,4 @@
-package model
+package terminal_model
 
 type TerminalBasicPack struct {
 	Key  string         `json:"key"` // 本机mac地址

@@ -1,4 +1,4 @@
-package model
+package terminal_model
 
 type TerminalCpuBasic struct {
 	ModelName     string `json:"model_name"`

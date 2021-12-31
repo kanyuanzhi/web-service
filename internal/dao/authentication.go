@@ -4,14 +4,14 @@ import (
 	"github.com/kanyuanzhi/web-service/internal/model"
 )
 
-func (dao *Dao) FindAuthenticationByUsername(username string) *model.Authentication {
+func (dao *Dao) FindAuthenticationByUsername(username string) (*model.Authentication, error) {
 	auth := &model.Authentication{
 		Username: username,
 	}
 	return auth.Find()
 }
 
-func (dao *Dao) FindAuthenticationByToken(token string) *model.Authentication {
+func (dao *Dao) FindAuthenticationByToken(token string) (*model.Authentication, error) {
 	auth := &model.Authentication{
 		Token: token,
 	}
@@ -34,7 +34,7 @@ func (dao *Dao) CountAuthentication(username string) int64 {
 	return auth.Count()
 }
 
-func (dao *Dao) UpdateAuthentication(token string, password string) error{
+func (dao *Dao) UpdateAuthentication(token string, password string) error {
 	auth := &model.Authentication{
 		Password: password,
 		Token:    token,
@@ -42,9 +42,9 @@ func (dao *Dao) UpdateAuthentication(token string, password string) error{
 	return auth.Update()
 }
 
-func (dao *Dao) DeleteAuthentication(token string) error{
+func (dao *Dao) DeleteAuthentication(token string) error {
 	auth := &model.Authentication{
-		Token:    token,
+		Token: token,
 	}
 	return auth.Delete()
 }

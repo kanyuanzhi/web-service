@@ -11,14 +11,13 @@ type Authentication struct {
 	Token    string `json:"token"`
 }
 
-func (auth *Authentication) Find() *Authentication {
+func (auth *Authentication) Find() (*Authentication, error) {
 	var authentication Authentication
 	err := global.DB.Where(auth).Find(&authentication).Error
 	if err != nil {
-		global.Log.Error(err)
-		return nil
+		return nil, err
 	}
-	return &authentication
+	return &authentication, nil
 }
 
 func (auth *Authentication) Create() {

@@ -15,7 +15,7 @@ type LoginRequest struct {
 	Password string `json:"password" form:"password"`
 }
 
-func (s *Service) Login(param *LoginRequest) *model.Authentication {
+func (s *Service) Login(param *LoginRequest) (*model.Authentication, error) {
 	return s.dao.FindAuthenticationByUsername(param.Username)
 }
 
@@ -52,12 +52,12 @@ type UpdatePasswordRequest struct {
 	CheckNewPassword string `json:"check_new_password" form:"check_new_password"`
 }
 
-func (s *Service) UpdateAuthentication(param *UpdatePasswordRequest) error{
-	auth := s.dao.FindAuthenticationByToken(param.Token)
-	if auth == nil{
+func (s *Service) UpdateAuthentication(param *UpdatePasswordRequest) error {
+	auth, err := s.dao.FindAuthenticationByToken(param.Token)
+	if err == nil {
 		return errors.New("wrong token")
 	}
-	err := bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(param.OldPassword))
+	err = bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(param.OldPassword))
 	if err != nil {
 		return err
 	}

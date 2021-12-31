@@ -43,12 +43,16 @@ func NewRouter() *gin.Engine {
 		apiv1.GET("/roles", role.List)
 		apiv1.PUT("/role", role.Update)
 
+		apiv1.POST("/terminal", terminal.Create)
+		apiv1.GET("/terminals", terminal.List)
+		apiv1.PUT("/terminal", terminal.Update)
+		apiv1.DELETE("/terminal", terminal.Delete)
+
 		// unfinished
 		apiv1.POST("/user/avatar", user.UploadAvatar)
 		apiv1.GET("/user/avatar/:image", user.DownloadAvatar)
 		//apiv1.PUT("/user/:token", user.Update)
 
-		apiv1.POST("/terminal", terminal.Create)
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r

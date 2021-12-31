@@ -53,11 +53,11 @@ func (d *Department) Update(c *gin.Context) {
 		global.Log.Error(err)
 		return
 	}
+
 	department, err := svc.UpdateDepartment(&updateDepartmentParam)
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.ServerError)
-		return
 	}
 
 	resData := model.NewSuccessResponse(department)

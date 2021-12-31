@@ -1,4 +1,4 @@
-package model
+package terminal_model
 
 type TerminalHostBasic struct {
 	Hostname        string `json:"hostname"`
