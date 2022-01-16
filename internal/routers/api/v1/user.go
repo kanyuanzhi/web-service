@@ -14,8 +14,7 @@ import (
 	"time"
 )
 
-type User struct {
-}
+type User struct{}
 
 func NewUser() *User {
 	return &User{}
@@ -245,11 +244,13 @@ func (u *User) Login(c *gin.Context) {
 	if err == nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.AuthenticationFailError)
+		return
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(loginParam.Password))
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.AuthenticationFailError)
+		return
 	}
 	resData := model.NewSuccessResponse(gin.H{"token": auth.Token})
 	res.ToResponse(resData)

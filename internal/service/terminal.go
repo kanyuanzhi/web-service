@@ -34,5 +34,13 @@ type DeleteTerminalRequest struct {
 }
 
 func (s *Service) DeleteTerminal(param *DeleteTerminalRequest) error {
-	return s.dao.DeleteTerminal(param.ID)
+	err := s.dao.DeleteTerminal(param.ID)
+	if err != nil {
+		return err
+	}
+	err = s.dao.DeleteTerminalGroupAssociationsByTerminalID(param.ID)
+	if err != nil {
+		return err
+	}
+	return nil
 }

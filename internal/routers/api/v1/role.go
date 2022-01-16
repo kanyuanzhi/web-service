@@ -9,8 +9,7 @@ import (
 	"github.com/kanyuanzhi/web-service/pkg/errcode"
 )
 
-type Role struct {
-}
+type Role struct{}
 
 func NewRole() *Role {
 	return &Role{}

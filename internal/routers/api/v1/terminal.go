@@ -9,8 +9,7 @@ import (
 	"github.com/kanyuanzhi/web-service/pkg/errcode"
 )
 
-type Terminal struct {
-}
+type Terminal struct{}
 
 func NewTerminal() *Terminal {
 	return &Terminal{}

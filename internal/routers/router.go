@@ -20,6 +20,7 @@ func NewRouter() *gin.Engine {
 	department := v1.NewDepartment()
 
 	terminal := v1.NewTerminal()
+	terminalGroup := v1.NewTerminalGroup()
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	apiv1 := r.Group("/api/v1")
@@ -48,10 +49,15 @@ func NewRouter() *gin.Engine {
 		apiv1.PUT("/terminal", terminal.Update)
 		apiv1.DELETE("/terminal", terminal.Delete)
 
+		apiv1.POST("/terminal_group", terminalGroup.Create)
+		apiv1.GET("/terminal_groups", terminalGroup.List)
+		apiv1.PUT("/terminal_group", terminalGroup.Update)
+		apiv1.DELETE("/terminal_group", terminalGroup.Delete)
+		apiv1.PUT("/terminal_group_members", terminalGroup.UpdateMembers)
+
 		// unfinished
 		apiv1.POST("/user/avatar", user.UploadAvatar)
 		apiv1.GET("/user/avatar/:image", user.DownloadAvatar)
-		//apiv1.PUT("/user/:token", user.Update)
 
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -9,11 +9,7 @@ import (
 	"github.com/kanyuanzhi/web-service/pkg/errcode"
 )
 
-type Department struct {
-	*model.DefaultFields
-	Name         string `json:"name,omitempty"`
-	Introduction string `json:"introduction,omitempty"`
-}
+type Department struct{}
 
 func NewDepartment() *Department {
 	return &Department{}
