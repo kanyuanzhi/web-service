@@ -36,6 +36,6 @@ func (s *Service) DeleteDepartment(param *DeleteDepartmentRequest) error {
 	if err != nil {
 		return err
 	}
-	s.dao.DeleteDepartmentUsers(param.ID)
+	s.dao.DeleteUserDepartmentAssociationsByDepartmentID(param.ID)
 	return nil
 }

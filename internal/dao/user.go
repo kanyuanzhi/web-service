@@ -4,7 +4,7 @@ import (
 	"github.com/kanyuanzhi/web-service/internal/model"
 )
 
-func (dao *Dao) CreateUser(token string, username string) uint {
+func (dao *Dao) CreateUser(token string, username string) (*model.User, error) {
 	user := &model.User{
 		Token:    token,
 		Username: username,
@@ -12,19 +12,19 @@ func (dao *Dao) CreateUser(token string, username string) uint {
 	return user.Create()
 }
 
-func (dao *Dao) GetUser(token string) *model.User {
+func (dao *Dao) GetUser(token string) (*model.User, error) {
 	user := &model.User{
 		Token: token,
 	}
 	return user.Get()
 }
 
-func (dao *Dao) ListUsers() []*model.User {
+func (dao *Dao) ListUsers() ([]*model.User, error) {
 	user := &model.User{}
 	return user.List()
 }
 
-func (dao *Dao) UpdateUser(id uint, name string, contact string, introduction string, avatar string) *model.User {
+func (dao *Dao) UpdateUser(id uint, name string, contact string, introduction string, avatar string) (*model.User, error) {
 	user := &model.User{
 		DefaultFields: &model.DefaultFields{ID: id},
 		Name:          name,
@@ -35,7 +35,7 @@ func (dao *Dao) UpdateUser(id uint, name string, contact string, introduction st
 	return user.Update()
 }
 
-func (dao *Dao) DeleteUser(token string) error {
+func (dao *Dao) DeleteUserByToken(token string) error {
 	user := &model.User{
 		Token: token,
 	}

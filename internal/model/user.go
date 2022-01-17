@@ -17,44 +17,29 @@ type User struct {
 	Departments []uint   `json:"departments" gorm:"-"`
 }
 
-func (u *User) Create() uint {
+func (u *User) Create() (*User, error) {
 	err := global.DB.Create(u).Error
-	if err != nil {
-		global.Log.Error(err)
-	}
-	return u.ID
+	return u, err
 }
 
-func (u *User) Get() *User {
+func (u *User) Get() (*User, error) {
 	var user User
 	err := global.DB.Where(u).Find(&user).Error
-	if err != nil {
-		global.Log.Error(err)
-	}
-	return &user
+	return &user, err
 }
 
-func (u *User) List() []*User {
+func (u *User) List() ([]*User, error) {
 	var users []*User
 	err := global.DB.Find(&users).Error
-	if err != nil {
-		global.Log.Error(err)
-	}
-	return users
+	return users, err
 }
 
-func (u *User) Update() *User {
+func (u *User) Update() (*User, error) {
 	err := global.DB.Model(u).Updates(u).Error
-	if err != nil {
-		global.Log.Error(err)
-	}
-	return u
+	return u, err
 }
 
 func (u *User) Delete() error {
-	err := global.DB.Where("token = ?", u.Token).Delete(u).Error
-	if err != nil {
-		return err
-	}
-	return nil
+	err := global.DB.Where(u).Delete(u).Error
+	return err
 }

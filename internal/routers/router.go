@@ -23,6 +23,7 @@ func NewRouter() *gin.Engine {
 	terminalGroup := v1.NewTerminalGroup()
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
+
 	apiv1 := r.Group("/api/v1")
 	{
 		// finished
@@ -58,7 +59,6 @@ func NewRouter() *gin.Engine {
 		// unfinished
 		apiv1.POST("/user/avatar", user.UploadAvatar)
 		apiv1.GET("/user/avatar/:image", user.DownloadAvatar)
-
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r

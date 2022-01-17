@@ -2,8 +2,6 @@ package service
 
 import (
 	"errors"
-	"github.com/kanyuanzhi/web-service/global"
-	"github.com/kanyuanzhi/web-service/internal/model"
 	"github.com/kanyuanzhi/web-service/utils"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
@@ -15,8 +13,16 @@ type LoginRequest struct {
 	Password string `json:"password" form:"password"`
 }
 
-func (s *Service) Login(param *LoginRequest) (*model.Authentication, error) {
-	return s.dao.FindAuthenticationByUsername(param.Username)
+func (s *Service) Login(param *LoginRequest) (string, error) {
+	auth, err := s.dao.FindAuthenticationByUsername(param.Username)
+	if err != nil {
+		return "", err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(param.Password))
+	if err != nil {
+		return "", err
+	}
+	return auth.Token, nil
 }
 
 type RegisterRequest struct {
@@ -25,24 +31,31 @@ type RegisterRequest struct {
 	CheckPassword string `json:"check_password" form:"check_password"`
 }
 
-func (s *Service) Register(param *RegisterRequest) string {
+func (s *Service) Register(param *RegisterRequest) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(param.Password), bcrypt.DefaultCost)
 	if err != nil {
-		global.Log.Error(err)
-		return ""
+		return "", err
 	}
+
 	password := string(hash)
 	tokenStr := param.Username + strconv.FormatInt(time.Now().Unix(), 10)
 	token := utils.MD5Str(tokenStr)
-	s.dao.CreateAuthentication(token, param.Username, password)
+	_, err = s.dao.CreateAuthentication(token, param.Username, password)
+	if err != nil {
+		return "", err
+	}
 
-	createUserParam := CreateUserRequest{Token: token, Username: param.Username}
-	userID := s.CreateUser(&createUserParam)
+	user, err := s.dao.CreateUser(token, param.Username)
+	if err != nil {
+		return "", err
+	}
 
-	createUserRolesParam := CreateUserRolesRequest{UserID: userID, RoleNames: []string{"guest"}} // 关联默认权限
-	s.CreateUserRoles(&createUserRolesParam)
+	_, err = s.dao.CreateUserRoleAssociations(user.ID, []string{"guest"})
+	if err != nil {
+		return "", err
+	}
 
-	return token
+	return token, nil
 }
 
 type UpdatePasswordRequest struct {
@@ -54,7 +67,7 @@ type UpdatePasswordRequest struct {
 
 func (s *Service) UpdateAuthentication(param *UpdatePasswordRequest) error {
 	auth, err := s.dao.FindAuthenticationByToken(param.Token)
-	if err == nil {
+	if err != nil {
 		return errors.New("wrong token")
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(param.OldPassword))
@@ -62,22 +75,18 @@ func (s *Service) UpdateAuthentication(param *UpdatePasswordRequest) error {
 		return err
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(param.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
 	NewPassword := string(hash)
-	return s.dao.UpdateAuthentication(param.Token, NewPassword)
+	return s.dao.UpdateAuthenticationByToken(param.Token, NewPassword)
 }
 
-type CountAuthenticationRequest struct {
-	Username string `json:"username" form:"username" `
-}
-
-func (s *Service) CountAuthentication(param *CountAuthenticationRequest) int64 {
-	return s.dao.CountAuthentication(param.Username)
-}
-
-type DeleteAuthenticationRequest struct {
-	Token string `json:"token" form:"token"`
-}
-
-func (s *Service) DeleteAuthentication(param *DeleteAuthenticationRequest) error {
-	return s.dao.DeleteAuthentication(param.Token)
+func (s *Service) IsUsernameRepeated(username string) (bool, error) {
+	count, err := s.dao.CountAuthentication(username)
+	if count == 0 {
+		return false, err
+	} else {
+		return true, err
+	}
 }

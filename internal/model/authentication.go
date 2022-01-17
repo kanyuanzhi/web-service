@@ -14,27 +14,21 @@ type Authentication struct {
 func (auth *Authentication) Find() (*Authentication, error) {
 	var authentication Authentication
 	err := global.DB.Where(auth).Find(&authentication).Error
-	if err != nil {
-		return nil, err
-	}
-	return &authentication, nil
+	return &authentication, err
 }
 
-func (auth *Authentication) Create() {
+func (auth *Authentication) Create() (*Authentication, error) {
 	err := global.DB.Create(auth).Error
-	if err != nil {
-		global.Log.Error(err)
-	}
+	return auth, err
 }
 
-func (auth *Authentication) Count() int64 {
+func (auth *Authentication) Count() (int64, error) {
 	var count int64
 	err := global.DB.Model(auth).Where(auth).Count(&count).Error
 	if err != nil {
-		global.Log.Error(err)
-		return -1
+		return -1, err
 	}
-	return count
+	return count, nil
 }
 
 func (auth *Authentication) Update() error {
@@ -43,6 +37,5 @@ func (auth *Authentication) Update() error {
 }
 
 func (auth *Authentication) Delete() error {
-	return global.DB.Where("token = ?", auth.Token).
-		Delete(auth).Error
+	return global.DB.Where(auth).Delete(auth).Error
 }

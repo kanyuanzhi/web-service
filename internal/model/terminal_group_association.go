@@ -16,18 +16,12 @@ func (tga *TerminalGroupAssociation) TableName() string {
 
 func (tga *TerminalGroupAssociation) CreateMany(associations []*TerminalGroupAssociation) ([]*TerminalGroupAssociation, error) {
 	err := global.DB.Create(&associations).Error
-	if err != nil {
-		return nil, err
-	}
-	return associations, nil
+	return associations, err
 }
 
 func (tga *TerminalGroupAssociation) Get() ([]*TerminalGroupAssociation, error) {
 	var associations []*TerminalGroupAssociation
 	err := global.DB.Where(tga).Find(&associations).Error
-	if err != nil {
-		return nil, err
-	}
 	return associations, err
 }
 
