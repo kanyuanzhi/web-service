@@ -15,14 +15,23 @@ func NewDepartment() *Department {
 	return &Department{}
 }
 
+// List 列出所有部门
 func (d *Department) List(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
-	departments := svc.ListDepartments()
+
+	departments, err := svc.ListDepartments()
+	if err != nil {
+		global.Log.Error(err)
+		res.ToResponse(errcode.ServerError)
+		return
+	}
+
 	resData := model.NewSuccessResponse(departments)
 	res.ToResponse(resData)
 }
 
+// Create 创建新部门
 func (d *Department) Create(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -33,12 +42,19 @@ func (d *Department) Create(c *gin.Context) {
 		global.Log.Error(err)
 		return
 	}
-	department := svc.CreateDepartment(&createDepartmentParam)
+
+	department, err := svc.CreateDepartment(&createDepartmentParam)
+	if err != nil {
+		global.Log.Error(err)
+		res.ToResponse(errcode.ServerError)
+		return
+	}
 
 	resData := model.NewSuccessResponse(department)
 	res.ToResponse(resData)
 }
 
+// Update 更新部门
 func (d *Department) Update(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -54,12 +70,14 @@ func (d *Department) Update(c *gin.Context) {
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.ServerError)
+		return
 	}
 
 	resData := model.NewSuccessResponse(department)
 	res.ToResponse(resData)
 }
 
+// Delete 删除部门
 func (d *Department) Delete(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -75,6 +93,7 @@ func (d *Department) Delete(c *gin.Context) {
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.ServerError)
+		return
 	}
 
 	resData := model.NewSuccessResponse(nil)

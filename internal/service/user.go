@@ -13,15 +13,6 @@ func (s *Service) Logout(param *LogoutRequest) error {
 	return nil
 }
 
-//type CreateUserRequest struct {
-//	Token    string `json:"token" form:"token"`
-//	Username string `json:"username" form:"username"`
-//}
-//
-//func (s *Service) CreateUser(param *CreateUserRequest) uint {
-//	return s.dao.CreateUser(param.Token, param.Username)
-//}
-
 type GetUserRequest struct {
 	Token string `json:"token" form:"token"`
 }
@@ -38,22 +29,22 @@ func (s *Service) GetUser(param *GetUserRequest) (*model.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	roles := []string{}
+	roleNames := []string{}
 	for _, association := range userRoleAssociations {
-		roles = append(roles, association.RoleName)
+		roleNames = append(roleNames, association.RoleName)
 	}
-	user.Roles = roles
+	user.RoleNames = roleNames
 
 	// 关联departments
 	userDepartmentAssociations, err := s.dao.GetUserDepartmentAssociations(user.ID)
 	if err != nil {
 		return nil, err
 	}
-	departments := []uint{}
+	departmentIDs := []uint{}
 	for _, association := range userDepartmentAssociations {
-		departments = append(departments, association.DepartmentID)
+		departmentIDs = append(departmentIDs, association.DepartmentID)
 	}
-	user.Departments = departments
+	user.DepartmentIDs = departmentIDs
 
 	return user, nil
 }
@@ -67,31 +58,31 @@ func (s *Service) ListUsers() ([]*model.User, error) {
 	for _, user := range users {
 		// 关联roles
 		userRoleAssociations, _ := s.dao.GetUserRoleAssociationsByUserID(user.ID)
-		roles := []string{}
+		roleNames := []string{}
 		for _, association := range userRoleAssociations {
-			roles = append(roles, association.RoleName)
+			roleNames = append(roleNames, association.RoleName)
 		}
-		user.Roles = roles
+		user.RoleNames = roleNames
 
 		// 关联departments
 		userDepartmentAssociations, _ := s.dao.GetUserDepartmentAssociations(user.ID)
-		departments := []uint{}
+		departmentIDs := []uint{}
 		for _, association := range userDepartmentAssociations {
-			departments = append(departments, association.DepartmentID)
+			departmentIDs = append(departmentIDs, association.DepartmentID)
 		}
-		user.Departments = departments
+		user.DepartmentIDs = departmentIDs
 	}
 	return users, nil
 }
 
 type UpdateUserAccountRequest struct {
 	// UserAccount包括两部分，用户基本表users和用户部门关联表user_department_associations
-	ID           uint   `json:"id"`
-	Name         string `json:"name"`
-	Contact      string `json:"contact"`
-	Introduction string `json:"introduction"`
-	Avatar       string `json:"avatar,omitempty"` //用户自己更新时avatar有值，管理员更新时avatar无值
-	Departments  []uint `json:"departments"`
+	ID            uint   `json:"id"`
+	Name          string `json:"name"`
+	Contact       string `json:"contact"`
+	Introduction  string `json:"introduction"`
+	Avatar        string `json:"avatar,omitempty"` //用户自己更新时avatar有值，管理员更新时avatar无值
+	DepartmentIDs []uint `json:"departments" form:"departments"`
 }
 
 func (s *Service) UpdateUserAccount(param *UpdateUserAccountRequest) (*model.User, error) {
@@ -106,13 +97,13 @@ func (s *Service) UpdateUserAccount(param *UpdateUserAccountRequest) (*model.Use
 	if err != nil {
 		return nil, err
 	}
-	if len(param.Departments) != 0 {
-		_, err = s.dao.CreateUserDepartmentAssociations(param.ID, param.Departments)
+	if len(param.DepartmentIDs) != 0 {
+		_, err = s.dao.CreateUserDepartmentAssociations(param.ID, param.DepartmentIDs)
 		if err != nil {
 			return nil, err
 		}
 	}
-	user.Departments = param.Departments
+	user.DepartmentIDs = param.DepartmentIDs
 
 	return user, nil
 }
@@ -162,7 +153,7 @@ func (s *Service) DeleteUser(param *DeleteUserRequest) error {
 		return err
 	}
 
-	//删除UserRoleAssociation表中的记录
+	//删除UserDepartmentAssociation表中的记录
 	err = s.dao.DeleteUserDepartmentAssociationsByUserID(user.ID)
 	if err != nil {
 		return err

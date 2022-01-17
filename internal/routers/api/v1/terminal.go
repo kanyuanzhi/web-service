@@ -15,6 +15,7 @@ func NewTerminal() *Terminal {
 	return &Terminal{}
 }
 
+// Create 创建新终端
 func (t *Terminal) Create(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -30,24 +31,30 @@ func (t *Terminal) Create(c *gin.Context) {
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.ServerError)
+		return
 	}
 
 	resData := model.NewSuccessResponse(terminal)
 	res.ToResponse(resData)
 }
 
+// List 列出所有终端
 func (t *Terminal) List(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
+
 	terminals, err := svc.ListTerminals()
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.ServerError)
+		return
 	}
+
 	resData := model.NewSuccessResponse(terminals)
 	res.ToResponse(resData)
 }
 
+// Update 更新终端信息
 func (t *Terminal) Update(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -63,12 +70,14 @@ func (t *Terminal) Update(c *gin.Context) {
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.ServerError)
+		return
 	}
 
 	resData := model.NewSuccessResponse(terminal)
 	res.ToResponse(resData)
 }
 
+// Delete 删除终端
 func (t *Terminal) Delete(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -84,6 +93,7 @@ func (t *Terminal) Delete(c *gin.Context) {
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.ServerError)
+		return
 	}
 
 	resData := model.NewSuccessResponse(nil)

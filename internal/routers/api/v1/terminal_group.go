@@ -15,19 +15,23 @@ func NewTerminalGroup() *TerminalGroup {
 	return &TerminalGroup{}
 }
 
+// List 列出所有终端组
 func (tg *TerminalGroup) List(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
+
 	terminalGroups, err := svc.ListTerminalGroups()
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.ServerError)
 		return
 	}
+
 	resData := model.NewSuccessResponse(terminalGroups)
 	res.ToResponse(resData)
 }
 
+// Create 创建新终端组
 func (tg *TerminalGroup) Create(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -51,6 +55,7 @@ func (tg *TerminalGroup) Create(c *gin.Context) {
 	res.ToResponse(resData)
 }
 
+// Update 更新终端组信息
 func (tg *TerminalGroup) Update(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -74,6 +79,7 @@ func (tg *TerminalGroup) Update(c *gin.Context) {
 	res.ToResponse(resData)
 }
 
+// UpdateMembers 更新终端组成员
 func (tg *TerminalGroup) UpdateMembers(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -97,6 +103,7 @@ func (tg *TerminalGroup) UpdateMembers(c *gin.Context) {
 	res.ToResponse(resData)
 }
 
+// Delete 删除终端组
 func (tg *TerminalGroup) Delete(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())

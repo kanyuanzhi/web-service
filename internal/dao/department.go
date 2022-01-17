@@ -4,7 +4,7 @@ import (
 	"github.com/kanyuanzhi/web-service/internal/model"
 )
 
-func (dao *Dao) CreateDepartment(name string, introduction string) *model.Department {
+func (dao *Dao) CreateDepartment(name string, introduction string) (*model.Department, error) {
 	department := &model.Department{
 		Name:         name,
 		Introduction: introduction,
@@ -12,7 +12,7 @@ func (dao *Dao) CreateDepartment(name string, introduction string) *model.Depart
 	return department.Create()
 }
 
-func (dao *Dao) ListDepartments() []*model.Department {
+func (dao *Dao) ListDepartments() ([]*model.Department, error) {
 	department := &model.Department{}
 	return department.List()
 }

@@ -8,35 +8,23 @@ type Department struct {
 	Introduction string `json:"introduction,omitempty"`
 }
 
-func (d *Department) Create() *Department {
+func (d *Department) Create() (*Department, error) {
 	err := global.DB.Create(d).Error
-	if err != nil {
-		global.Log.Error(err)
-	}
-	return d
+	return d, err
 }
 
-func (d *Department) List() []*Department {
+func (d *Department) List() ([]*Department, error) {
 	var departments []*Department
 	err := global.DB.Find(&departments).Error
-	if err != nil {
-		global.Log.Error(err)
-	}
-	return departments
+	return departments, err
 }
 
 func (d *Department) Update() (*Department, error) {
 	err := global.DB.Model(d).Updates(d).Error
-	if err != nil {
-		return nil, err
-	}
-	return d, nil
+	return d, err
 }
 
 func (d *Department) Delete() error {
 	err := global.DB.Delete(d).Error
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

@@ -15,16 +15,23 @@ func NewRole() *Role {
 	return &Role{}
 }
 
+// List 列出所有权限
 func (r *Role) List(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
 
-	roles := svc.ListRoles()
+	roles, err := svc.ListRoles()
+	if err != nil {
+		global.Log.Error(err)
+		res.ToResponse(errcode.ServerError)
+		return
+	}
 
 	resData := model.NewSuccessResponse(roles)
 	res.ToResponse(resData)
 }
 
+// Update 更新权限
 func (r *Role) Update(c *gin.Context) {
 	res := app.NewResponse(c)
 	svc := service.New(c.Request.Context())
@@ -40,6 +47,7 @@ func (r *Role) Update(c *gin.Context) {
 	if err != nil {
 		global.Log.Error(err)
 		res.ToResponse(errcode.ServerError)
+		return
 	}
 
 	resData := model.NewSuccessResponse(role)

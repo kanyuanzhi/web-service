@@ -60,7 +60,6 @@ func (s *Service) DeleteTerminalGroup(param *DeleteTerminalGroupRequest) error {
 	if err != nil {
 		return err
 	}
-	//s.dao.DeleteTerminalGroupUsers(param.ID)
 	return nil
 }
 
@@ -74,13 +73,11 @@ func (s *Service) UpdateTerminalGroupAssociations(param *UpdateTerminalGroupAsso
 	if err != nil {
 		return err
 	}
-	if len(param.TerminalIDs) == 0 {
-		// 新的成员为空时直接返回不用创建
-		return nil
-	}
-	_, err = s.dao.CreateTerminalGroupAssociations(param.GroupID, param.TerminalIDs)
-	if err != nil {
-		return err
+	if len(param.TerminalIDs) != 0 {
+		_, err = s.dao.CreateTerminalGroupAssociations(param.GroupID, param.TerminalIDs)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

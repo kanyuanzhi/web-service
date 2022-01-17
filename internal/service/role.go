@@ -4,7 +4,7 @@ import (
 	"github.com/kanyuanzhi/web-service/internal/model"
 )
 
-func (s *Service) ListRoles() []*model.Role {
+func (s *Service) ListRoles() ([]*model.Role, error) {
 	return s.dao.ListRoles()
 }
 

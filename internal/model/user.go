@@ -13,8 +13,8 @@ type User struct {
 	Introduction string `json:"introduction"`
 	Avatar       string `json:"avatar"`
 
-	Roles       []string `json:"roles" gorm:"-"`
-	Departments []uint   `json:"departments" gorm:"-"`
+	RoleNames     []string `json:"roles" form:"roles" gorm:"-"`
+	DepartmentIDs []uint   `json:"departments" form:"departments" gorm:"-"`
 }
 
 func (u *User) Create() (*User, error) {

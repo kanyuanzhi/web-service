@@ -7,13 +7,13 @@ type CreateDepartmentRequest struct {
 	Introduction string `json:"introduction" form:"introduction"`
 }
 
-func (s *Service) CreateDepartment(param *CreateDepartmentRequest) *model.Department {
+func (s *Service) CreateDepartment(param *CreateDepartmentRequest) (*model.Department, error) {
 	return s.dao.CreateDepartment(param.Name, param.Introduction)
 }
 
 type ListDepartmentsRequest struct{}
 
-func (s *Service) ListDepartments() []*model.Department {
+func (s *Service) ListDepartments() ([]*model.Department, error) {
 	return s.dao.ListDepartments()
 }
 
@@ -32,10 +32,17 @@ type DeleteDepartmentRequest struct {
 }
 
 func (s *Service) DeleteDepartment(param *DeleteDepartmentRequest) error {
+	// 删除Departments表中的记录
 	err := s.dao.DeleteDepartment(param.ID)
 	if err != nil {
 		return err
 	}
-	s.dao.DeleteUserDepartmentAssociationsByDepartmentID(param.ID)
+
+	// 删除UserDepartmentAssociations表中的记录
+	err = s.dao.DeleteUserDepartmentAssociationsByDepartmentID(param.ID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
