@@ -5,32 +5,32 @@ import (
 )
 
 func (dao *Dao) CreateTerminalGroup(name string, manager string, introduction string) (*model.TerminalGroup, error) {
-	department := &model.TerminalGroup{
+	terminalGroup := &model.TerminalGroup{
 		Name:         name,
 		Manager:      manager,
 		Introduction: introduction,
 	}
-	return department.Create()
+	return terminalGroup.Create()
 }
 
 func (dao *Dao) ListTerminalGroups() ([]*model.TerminalGroup, error) {
-	department := &model.TerminalGroup{}
-	return department.List()
+	terminalGroup := &model.TerminalGroup{}
+	return terminalGroup.List()
 }
 
 func (dao *Dao) UpdateTerminalGroup(id uint, name string, manager string, introduction string) (*model.TerminalGroup, error) {
-	department := &model.TerminalGroup{
+	terminalGroup := &model.TerminalGroup{
 		DefaultFields: &model.DefaultFields{ID: id},
 		Name:          name,
 		Manager:       manager,
 		Introduction:  introduction,
 	}
-	return department.Update()
+	return terminalGroup.Update()
 }
 
 func (dao *Dao) DeleteTerminalGroup(id uint) error {
-	department := &model.TerminalGroup{
+	terminalGroup := &model.TerminalGroup{
 		DefaultFields: &model.DefaultFields{ID: id},
 	}
-	return department.Delete()
+	return terminalGroup.Delete()
 }

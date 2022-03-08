@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kanyuanzhi/web-service/docs"
 	"github.com/kanyuanzhi/web-service/internal/middleware"
-	"github.com/kanyuanzhi/web-service/internal/routers/api/v1"
+	v1 "github.com/kanyuanzhi/web-service/internal/routers/api/v1"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
@@ -21,6 +21,8 @@ func NewRouter() *gin.Engine {
 
 	terminal := v1.NewTerminal()
 	terminalGroup := v1.NewTerminalGroup()
+
+	video := v1.NewVideo()
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
 
@@ -55,6 +57,11 @@ func NewRouter() *gin.Engine {
 		apiv1.PUT("/terminal_group", terminalGroup.Update)
 		apiv1.DELETE("/terminal_group", terminalGroup.Delete)
 		apiv1.PUT("/terminal_group_members", terminalGroup.UpdateMembers)
+
+		apiv1.POST("/video", video.Create)
+		apiv1.GET("/videos", video.List)
+		apiv1.PUT("/video", video.Update)
+		apiv1.DELETE("/video", video.Delete)
 
 		// unfinished
 		apiv1.POST("/user/avatar", user.UploadAvatar)
